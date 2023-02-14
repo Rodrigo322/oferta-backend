@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Definição da tabela Usuário
+model Usuario {
+  id                 Int                  @id @default(autoincrement())
+  nome               String
+  email              String               @unique
+  senha              String
+  lojas              Loja[] // Relação com a tabela Loja
+  vendas             Venda[] // Relação com a tabela Venda
+  vendas_vendedor    Venda[]              @relation("vendedor")
+  vendas_comprador   Venda[]              @relation("comprador")
+  NivelAcesso        NivelAcesso[]
+  NivelAcessoUsuario NivelAcessoUsuario[]
+}
+
+// Definição da tabela NivelAcesso
+model NivelAcesso {
+  id                 Int                  @id @default(autoincrement())
+  nome               String               @unique
+  usuarios           Usuario[]
+  NivelAcessoUsuario NivelAcessoUsuario[]
+}
+
+model NivelAcessoUsuario {
+  id            Int         @id @default(autoincrement())
+  usuario       Usuario     @relation(fields: [usuarioId], references: [id])
+  nivelAcesso   NivelAcesso @relation(fields: [nivelAcessoId], references: [id])
+  usuarioId     Int
+  nivelAcessoId Int
+}
+
+// Definição da tabela Loja
+model Loja {
+  id        Int     @id @default(autoincrement())
+  nome      String
+  descricao String
+  usuarioId Int
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+}
+
+// Definição da tabela Produto
+model Produto {
+  id        Int            @id @default(autoincrement())
+  nome      String
+  descricao String
+  preco     Float
+  vendas    VendaProduto[]
+}
+
+// Definição da tabela Venda
+model Venda {
+  id                 Int            @id @default(autoincrement())
+  valor_total        Float
+  data               DateTime
+  usuario_vendedor   Usuario        @relation("vendedor", fields: [usuarioVendedorId], references: [id])
+  usuario_comprador  Usuario        @relation("comprador", fields: [usuarioCompradorId], references: [id])
+  usuarioVendedorId  Int
+  usuarioCompradorId Int
+  produtos           VendaProduto[]
+  usuario            Usuario?       @relation(fields: [usuarioId], references: [id])
+  usuarioId          Int?
+}
+
+// Definição da tabela VendaProduto (tabela associativa)
+model VendaProduto {
+  id         Int     @id @default(autoincrement())
+  quantidade Int
+  venda      Venda   @relation(fields: [vendaId], references: [id])
+  produto    Produto @relation(fields: [produtoId], references: [id])
+  vendaId    Int
+  produtoId  Int
+}
