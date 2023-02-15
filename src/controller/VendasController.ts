@@ -4,21 +4,35 @@ import { Request, Response } from "express";
 const prisma = new PrismaClient();
 
 export const realizarVenda = async (req: Request, res: Response) => {
-  const { produtosIds, usuarioVendedorId, usuarioCompradorId } = req.body;
+  const { produtos, usuarioVendedorId, usuarioCompradorId } = req.body;
 
   try {
     // Busca os produtos selecionados pelo usuário
-    const produtos = await prisma.produto.findMany({
+    const produtosDoBanco = await prisma.produto.findMany({
       where: {
-        id: { in: produtosIds },
+        id: { in: produtos.map((produto: any) => produto.id) },
       },
     });
 
+    // Adiciona a quantidade de cada produto selecionado
+    const produtosComQuantidade = produtosDoBanco.map((produto) => {
+      const { id, nome, preco } = produto;
+      const quantidade = produtos.find(
+        (p: any) => p.id === produto.id
+      ).quantidade;
+      return {
+        id,
+        nome,
+        preco,
+        quantidade,
+      };
+    });
+
     // Calcula o valor total da venda
-    const valorTotal = produtos.reduce(
-      (total, produto) => total + produto.preco,
-      0
-    );
+    let valorTotal = 0;
+    for (const produto of produtosComQuantidade) {
+      valorTotal += produto.preco * parseInt(produto.quantidade);
+    }
 
     // Cria a venda no banco de dados
     const venda = await prisma.venda.create({
@@ -28,15 +42,28 @@ export const realizarVenda = async (req: Request, res: Response) => {
         usuario_vendedor: { connect: { id: usuarioVendedorId } },
         usuario_comprador: { connect: { id: usuarioCompradorId } },
         produtos: {
-          create: produtos.map((produto) => ({
+          create: produtosComQuantidade.map((produto) => ({
             produto: { connect: { id: produto.id } },
-            quantidade: 1,
+            quantidade: produto.quantidade,
           })),
         },
       },
       include: {
         produtos: true,
       },
+    });
+
+    // Atualiza a quantidade de cada produto vendido na tabela de produtos
+
+    produtosComQuantidade.map(async (produto) => {
+      await prisma.produto.updateMany({
+        where: { id: produto.id },
+        data: {
+          quantidade: {
+            decrement: parseInt(produto.quantidade),
+          },
+        },
+      });
     });
 
     res.status(200).json({ message: "Venda realizada com sucesso", venda });

@@ -8,7 +8,7 @@ export const createProduto = async (req: Request, res: Response) => {
   const { lojaId } = req.params;
   const { id } = req.user;
 
-  // const requestImage = req.file as Express.Multer.File;
+  const requestImage = req.file as Express.Multer.File;
 
   if (!nome || !descricao || !preco || !lojaId) {
     return res
@@ -44,9 +44,9 @@ export const createProduto = async (req: Request, res: Response) => {
     data: {
       nome,
       descricao,
-      preco,
-      quantidade,
-      img: "teste",
+      preco: Number(preco),
+      quantidade: Number(quantidade),
+      img: requestImage.originalname,
       Loja: {
         connect: {
           id: Number(lojaId),

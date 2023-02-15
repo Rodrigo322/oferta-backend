@@ -33,7 +33,6 @@ O aplicativo será disponibilizado na loja virtual de aplicativos Google Play ap
 
 - [] alteração de dados do produtor e comprador
 - [] realização da venda dos produtos
-<!-- - [] filtro de busca de produtos -->
 
 ---
 

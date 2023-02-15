@@ -1,6 +1,10 @@
 import { Router } from "express";
+import multer from "multer";
 
 export const router = Router();
+
+import uploadConfig from "./config/multer";
+const upload = multer(uploadConfig);
 
 import { createNivelAcesso } from "./controller/AccessController";
 import { login } from "./controller/authController";
@@ -25,6 +29,7 @@ router.post("/create/loja", authMiddleware(["Vendedor", "adm"]), createLoja);
 router.post(
   "/create/produto/loja/:lojaId",
   authMiddleware(["Vendedor", "adm"]),
+  upload.single("image"),
   createProduto
 );
 
