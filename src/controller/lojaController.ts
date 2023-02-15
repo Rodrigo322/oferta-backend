@@ -3,35 +3,9 @@ import { Request, Response } from "express";
 
 const prisma = new PrismaClient();
 
-export const createProduto = async (req: Request, res: Response) => {
-  const { nome, descricao, preco } = req.body;
-  const { lojaId } = req.params;
-
-  if (!nome || !descricao || !preco || !lojaId) {
-    return res
-      .status(400)
-      .json({ error: "Algum campo obrigatório não foi fornecido" });
-  }
-
-  const createdProduto = await prisma.produto.create({
-    data: {
-      nome,
-      descricao,
-      preco,
-      Loja: {
-        connect: {
-          id: Number(lojaId),
-        },
-      },
-    },
-  });
-
-  return res.json(createdProduto);
-};
-
 export const createLoja = async (req: Request, res: Response) => {
   const { nome, descricao } = req.body;
-  const { id } = req.params;
+  const { id } = req.user;
 
   try {
     const loja = await prisma.loja.create({
@@ -52,4 +26,10 @@ export const createLoja = async (req: Request, res: Response) => {
     console.error(error);
     return res.status(500).json({ message: "Erro ao criar loja" });
   }
+};
+
+export const getAllLoja = async (req: Request, res: Response) => {
+  const loja = await prisma.loja.findMany();
+
+  return res.json(loja);
 };

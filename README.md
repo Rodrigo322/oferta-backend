@@ -18,22 +18,22 @@ O aplicativo será disponibilizado na loja virtual de aplicativos Google Play ap
 
 ## ⚙️ Funcionalidades
 
-- [] Cadastro de Compradores
-- [] Cadastro de produtores
+- [] Cadastro de Usuários - adm, comprador, vendedor
 
 - [] Aunteticação de usuarios com e-mail e senha
 
-- [] Cadastro de produtos
-- [] busca de produtos
-- [] alteração de produtos
-- [] remoção de produtos
+- [] Cadastro da Loja
 
-## ⚙️ Funcionalidades que ainda faltam ser implementadas
+  - [] Cadastro de produtos
+  - [] busca de produtos
+  - [] alteração de produtos
+  - [] remoção de produtos
 
 - [] cadastro da historia do produtor
+
 - [] alteração de dados do produtor e comprador
 - [] realização da venda dos produtos
-- [] filtro de busca de produtos
+<!-- - [] filtro de busca de produtos -->
 
 ---
 
@@ -50,10 +50,10 @@ Além disto é bom ter um editor para trabalhar com o código como [VSCode](http
 ```bash
 
 # Clone este repositório
-$ git clone https://github.com/Rodrigo322/backend-apprual.git
+$ git clone https://github.com/Rodrigo322/oferta-backend.git
 
 # Vá para a pasta backend
-$ cd backend-apprual
+$ cd ferta-backend
 
 # Instale as dependências
 $ npm install ou yarn
@@ -71,7 +71,7 @@ $ npm run dev ou yarn dev
 
 As seguintes ferramentas foram usadas na construção do projeto:
 
-#### [](https://github.com/Rodrigo322/backend-apprual.git)**Backend** ([NodeJS](https://nodejs.org/en/))
+#### [](https://github.com/Rodrigo322/oferta-backend.git)**Backend** ([NodeJS](https://nodejs.org/en/))
 
 - **[Express](https://expressjs.com/)**
 - **[Prisma](https://www.prisma.io)**

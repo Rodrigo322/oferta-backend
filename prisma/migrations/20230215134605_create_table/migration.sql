@@ -3,7 +3,23 @@ CREATE TABLE "Usuario" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "nome" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "senha" TEXT NOT NULL
+    "senha" TEXT NOT NULL,
+    "cpf" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "NivelAcesso" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "nome" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "NivelAcessoUsuario" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "usuarioId" INTEGER NOT NULL,
+    "nivelAcessoId" INTEGER NOT NULL,
+    CONSTRAINT "NivelAcessoUsuario_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "NivelAcessoUsuario_nivelAcessoId_fkey" FOREIGN KEY ("nivelAcessoId") REFERENCES "NivelAcesso" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -16,17 +32,15 @@ CREATE TABLE "Loja" (
 );
 
 -- CreateTable
-CREATE TABLE "NivelAcesso" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "nome" TEXT NOT NULL
-);
-
--- CreateTable
 CREATE TABLE "Produto" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "nome" TEXT NOT NULL,
     "descricao" TEXT NOT NULL,
-    "preco" REAL NOT NULL
+    "preco" REAL NOT NULL,
+    "quantidade" INTEGER NOT NULL,
+    "img" TEXT,
+    "lojaId" INTEGER,
+    CONSTRAINT "Produto_lojaId_fkey" FOREIGN KEY ("lojaId") REFERENCES "Loja" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -62,6 +76,12 @@ CREATE TABLE "_NivelAcessoToUsuario" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Usuario_email_key" ON "Usuario"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Usuario_cpf_key" ON "Usuario"("cpf");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "NivelAcesso_nome_key" ON "NivelAcesso"("nome");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_NivelAcessoToUsuario_AB_unique" ON "_NivelAcessoToUsuario"("A", "B");

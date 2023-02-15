@@ -1,14 +1,17 @@
 import { PrismaClient } from "@prisma/client";
+import { Request, Response } from "express";
 const prisma = new PrismaClient();
 
-export const createNivelAcesso = async () => {
+export const createNivelAcesso = async (req: Request, res: Response) => {
+  const { nivelAcessoNome } = req.body;
+
   try {
     const novoNivelAcesso = await prisma.nivelAcesso.create({
       data: {
-        nome: "Vendedor",
+        nome: nivelAcessoNome,
       },
     });
-    console.log(`Novo nível de acesso criado com o ID: ${novoNivelAcesso.id}`);
+    return res.json(novoNivelAcesso);
   } catch (error) {
     console.error(`Erro ao criar novo nível de acesso: ${error}`);
   } finally {

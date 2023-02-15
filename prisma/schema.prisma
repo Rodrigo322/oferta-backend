@@ -13,6 +13,7 @@ model Usuario {
   nome               String
   email              String               @unique
   senha              String
+  cpf                String               @unique
   lojas              Loja[] // Relação com a tabela Loja
   vendas             Venda[] // Relação com a tabela Venda
   vendas_vendedor    Venda[]              @relation("vendedor")
@@ -49,13 +50,15 @@ model Loja {
 
 // Definição da tabela Produto
 model Produto {
-  id        Int            @id @default(autoincrement())
-  nome      String
-  descricao String
-  preco     Float
-  vendas    VendaProduto[]
-  Loja      Loja?          @relation(fields: [lojaId], references: [id])
-  lojaId    Int?
+  id         Int            @id @default(autoincrement())
+  nome       String
+  descricao  String
+  preco      Float
+  quantidade Int
+  img        String?
+  vendas     VendaProduto[]
+  Loja       Loja?          @relation(fields: [lojaId], references: [id])
+  lojaId     Int?
 }
 
 // Definição da tabela Venda

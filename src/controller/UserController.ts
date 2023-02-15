@@ -7,6 +7,7 @@ interface CreateUserInput {
   nome: string;
   email: string;
   senha: string;
+  cpf: string;
   nivelAcessoNome: string;
 }
 
@@ -21,7 +22,8 @@ export const listUser = async (req: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
-  const { nome, email, senha, nivelAcessoNome } = req.body as CreateUserInput;
+  const { nome, email, senha, nivelAcessoNome, cpf } =
+    req.body as CreateUserInput;
   const nivelAcesso = await prisma.nivelAcesso.findUnique({
     where: {
       nome: nivelAcessoNome,
@@ -40,6 +42,7 @@ export const createUser = async (req: Request, res: Response) => {
         nome,
         email,
         senha,
+        cpf,
         NivelAcesso: {
           connect: {
             id: nivelAcesso.id,
