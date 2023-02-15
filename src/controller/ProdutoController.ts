@@ -46,7 +46,7 @@ export const createProduto = async (req: Request, res: Response) => {
       descricao,
       preco: Number(preco),
       quantidade: Number(quantidade),
-      img: requestImage.originalname,
+      img: `http://localhost:3333/image/${requestImage.filename}`,
       Loja: {
         connect: {
           id: Number(lojaId),
