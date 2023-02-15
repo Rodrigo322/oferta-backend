@@ -1,7 +1,7 @@
-import type { NivelAcesso } from '@prisma/client';
-
-declare namespace Prisma {
-  interface Usuario {
-    nivelAcesso: NivelAcesso[];
+declare namespace Express {
+  interface Request {
+    user: {
+      id: number;
+    };
   }
 }
