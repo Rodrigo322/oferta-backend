@@ -39,11 +39,12 @@ model NivelAcessoUsuario {
 
 // Definição da tabela Loja
 model Loja {
-  id        Int     @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   nome      String
   descricao String
+  produto   Produto[]
   usuarioId Int
-  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  usuario   Usuario   @relation(fields: [usuarioId], references: [id])
 }
 
 // Definição da tabela Produto
@@ -53,6 +54,8 @@ model Produto {
   descricao String
   preco     Float
   vendas    VendaProduto[]
+  Loja      Loja?          @relation(fields: [lojaId], references: [id])
+  lojaId    Int?
 }
 
 // Definição da tabela Venda

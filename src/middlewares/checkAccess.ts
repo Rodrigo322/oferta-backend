@@ -1,22 +1,39 @@
-import { PrismaClient } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
+
+const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
-export const checkAccess = (role: string) => (req: Request, res: Response, next: NextFunction) => {
-  const userId = req.body.userId; // Supondo que o ID do usuário esteja no corpo da requisição
-  prisma.usuario.findUnique({
-    where: {
-      id: userId,
-    },
-  }).then((usuario) => {
-    if (usuario?.nivelAcessoId?.some((nivel) => nivel.nome === role)) {
+export const checkAccess = (role: string) => {
+  return async function (req: Request, res: Response, next: NextFunction) {
+    const { id } = req.params;
+
+    try {
+      const usuario = await prisma.usuario.findUnique({
+        where: {
+          id: Number(id),
+        },
+        include: {
+          NivelAcesso: true,
+        },
+      });
+
+      if (!usuario) {
+        return res.status(401).json({ mensagem: "Usuário não autenticado" });
+      }
+
+      const temPermissao = usuario.NivelAcesso.some(
+        (nivelAcesso: any) => nivelAcesso.nome === role
+      );
+
+      if (!temPermissao) {
+        return res.status(403).json({ mensagem: "Acesso negado" });
+      }
+
       next();
-    } else {
-      res.status(403).send("Acesso negado");
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ mensagem: "Erro interno do servidor" });
     }
-  }).catch((error) => {
-    console.error(error);
-    res.status(500).send("Erro ao verificar permissão de acesso");
-  });
+  };
 };

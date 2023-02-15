@@ -10,19 +10,14 @@ interface CreateUserInput {
   nivelAcessoNome: string;
 }
 
-export const createNivelAcesso = async () => {
-  try {
-    const novoNivelAcesso = await prisma.nivelAcesso.create({
-      data: {
-        nome: "Vendedor",
-      },
-    });
-    console.log(`Novo nível de acesso criado com o ID: ${novoNivelAcesso.id}`);
-  } catch (error) {
-    console.error(`Erro ao criar novo nível de acesso: ${error}`);
-  } finally {
-    await prisma.$disconnect();
-  }
+export const listUser = async (req: Request, res: Response) => {
+  const listUser = await prisma.usuario.findMany({
+    include: {
+      NivelAcesso: true,
+    },
+  });
+
+  return res.json(listUser);
 };
 
 export const createUser = async (req: Request, res: Response) => {
@@ -39,6 +34,7 @@ export const createUser = async (req: Request, res: Response) => {
 
   try {
     // Cria o usuário com nível de acesso "comprador"
+
     const user = await prisma.usuario.create({
       data: {
         nome,
