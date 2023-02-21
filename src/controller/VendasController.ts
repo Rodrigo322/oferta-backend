@@ -79,3 +79,24 @@ export const getAllVendas = async (req: Request, res: Response) => {
 
   return res.json(vendas);
 };
+
+export const getAllVendasByUserId = async (req: Request, res: Response) => {
+  const { id } = req.user;
+
+  const allVendas = await prisma.venda.findMany({
+    where: {
+      usuarioCompradorId: id,
+    },
+    select: {
+      id: true,
+      valor_total: true,
+      usuario_vendedor: {
+        select: {
+          nome: true,
+        },
+      },
+    },
+  });
+
+  return res.json(allVendas);
+};

@@ -22,7 +22,10 @@ import {
   listUser,
   updateUser,
 } from "./controller/UserController";
-import { getAllVendas, realizarVenda } from "./controller/VendasController";
+import {
+  getAllVendasByUserId,
+  realizarVenda,
+} from "./controller/VendasController";
 import { authMiddleware } from "./middlewares/auth";
 
 router.post("/user", createUser);
@@ -70,6 +73,11 @@ router.get(
 );
 
 router.post("/venda", authMiddleware(["Comprador", "adm"]), realizarVenda);
-router.get("/vendas", authMiddleware(["Comprador", "adm"]), getAllVendas);
+router.post("/venda", authMiddleware(["Comprador", "adm"]), realizarVenda);
+router.get(
+  "/vendas/user",
+  authMiddleware(["Comprador", "adm", "Vendedor"]),
+  getAllVendasByUserId
+);
 router.post("/deletarTodosProdutos", deleteManyProdutos);
 router.get("/produto/:produtoId", getUniqueProdutos);
