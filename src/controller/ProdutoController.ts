@@ -46,7 +46,7 @@ export const createProduto = async (req: Request, res: Response) => {
       descricao,
       preco: Number(preco),
       quantidade: Number(quantidade),
-      img: `http://localhost:3333/image/${requestImage.filename}`,
+      img: `http://10.0.1.18:3333/image/${requestImage.filename}`,
       Loja: {
         connect: {
           id: Number(lojaId),
@@ -60,7 +60,15 @@ export const createProduto = async (req: Request, res: Response) => {
 
 export const getAllProdutos = async (req: Request, res: Response) => {
   try {
-    const produtos = await prisma.produto.findMany();
+    const produtos = await prisma.produto.findMany({
+      include: {
+        Loja: {
+          select: {
+            nome: true,
+          },
+        },
+      },
+    });
 
     if (produtos.length < 0) {
       return res.status(204).json({ message: "Nenhum produto foi encontrado" });
@@ -80,9 +88,16 @@ export const getAllProdutosLoja = async (req: Request, res: Response) => {
   try {
     const produtos = await prisma.produto.findMany({
       where: { lojaId: Number(lojaId) },
+      include: {
+        Loja: {
+          select: {
+            usuarioId: true,
+          },
+        },
+      },
     });
 
-    if (produtos.length > 0) {
+    if (produtos.length < 0) {
       return res.status(204).json({ message: "Nenhum produto foi encontrado" });
     }
 
@@ -93,4 +108,30 @@ export const getAllProdutosLoja = async (req: Request, res: Response) => {
       .status(500)
       .json({ message: "Ocorreu um erro interno no servidor" });
   }
+};
+
+export const deleteManyProdutos = async (req: Request, res: Response) => {
+  await prisma.produto.deleteMany();
+
+  return res.status(204);
+};
+
+export const getUniqueProdutos = async (req: Request, res: Response) => {
+  const { produtoId } = req.params;
+  const produto = await prisma.produto.findUnique({
+    where: { id: Number(produtoId) },
+    select: {
+      nome: true,
+      img: true,
+      preco: true,
+      Loja: {
+        select: {
+          nome: true,
+          usuarioId: true,
+        },
+      },
+    },
+  });
+
+  return res.json(produto);
 };

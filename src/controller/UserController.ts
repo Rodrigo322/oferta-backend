@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { hash } from "bcryptjs";
 import { Request, Response } from "express";
 
 const prisma = new PrismaClient();
@@ -24,24 +25,23 @@ export const listUser = async (req: Request, res: Response) => {
 export const createUser = async (req: Request, res: Response) => {
   const { nome, email, senha, nivelAcessoNome, cpf } =
     req.body as CreateUserInput;
-  const nivelAcesso = await prisma.nivelAcesso.findUnique({
-    where: {
-      nome: nivelAcessoNome,
-    },
-  });
-
-  if (!nivelAcesso) {
-    throw new Error(`Nível de acesso ${nivelAcessoNome} não existe`);
-  }
-
   try {
-    // Cria o usuário com nível de acesso "comprador"
+    const nivelAcesso = await prisma.nivelAcesso.findUnique({
+      where: {
+        nome: nivelAcessoNome,
+      },
+    });
+
+    if (!nivelAcesso) {
+      throw new Error(`Nível de acesso ${nivelAcessoNome} não existe`);
+    }
+    const passwordHash = await hash(senha, 8);
 
     const user = await prisma.usuario.create({
       data: {
         nome,
         email,
-        senha,
+        senha: passwordHash,
         cpf,
         NivelAcesso: {
           connect: {
@@ -56,4 +56,32 @@ export const createUser = async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).send("Erro ao criar usuário");
   }
+};
+
+export const updateUser = async (req: Request, res: Response) => {
+  const { nome, email, cpf } = req.body;
+  const { id } = req.user;
+
+  const user = await prisma.usuario.update({
+    where: {
+      id,
+    },
+    data: {
+      nome,
+      email,
+      cpf,
+    },
+  });
+
+  return res.json({ user });
+};
+
+export const getUniqueUser = async (req: Request, res: Response) => {
+  const { id } = req.user;
+
+  const user = await prisma.usuario.findUnique({
+    where: { id },
+  });
+
+  return res.json(user);
 };

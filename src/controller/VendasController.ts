@@ -4,7 +4,8 @@ import { Request, Response } from "express";
 const prisma = new PrismaClient();
 
 export const realizarVenda = async (req: Request, res: Response) => {
-  const { produtos, usuarioVendedorId, usuarioCompradorId } = req.body;
+  const { produtos, usuarioVendedorId } = req.body;
+  const { id } = req.user;
 
   try {
     // Busca os produtos selecionados pelo usuário
@@ -40,7 +41,7 @@ export const realizarVenda = async (req: Request, res: Response) => {
         valor_total: valorTotal,
         data: new Date(),
         usuario_vendedor: { connect: { id: usuarioVendedorId } },
-        usuario_comprador: { connect: { id: usuarioCompradorId } },
+        usuario_comprador: { connect: { id: id } },
         produtos: {
           create: produtosComQuantidade.map((produto) => ({
             produto: { connect: { id: produto.id } },
@@ -66,9 +67,15 @@ export const realizarVenda = async (req: Request, res: Response) => {
       });
     });
 
-    res.status(200).json({ message: "Venda realizada com sucesso", venda });
+    res.status(200).json({ message: "Compra realizada com sucesso", venda });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Ocorreu um erro ao realizar a venda" });
   }
+};
+
+export const getAllVendas = async (req: Request, res: Response) => {
+  const vendas = await prisma.venda.findMany();
+
+  return res.json(vendas);
 };

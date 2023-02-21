@@ -11,19 +11,37 @@ import { login } from "./controller/authController";
 import { createLoja, getAllLoja } from "./controller/lojaController";
 import {
   createProduto,
+  deleteManyProdutos,
   getAllProdutos,
   getAllProdutosLoja,
+  getUniqueProdutos,
 } from "./controller/ProdutoController";
-import { createUser, listUser } from "./controller/UserController";
-import { realizarVenda } from "./controller/VendasController";
+import {
+  createUser,
+  getUniqueUser,
+  listUser,
+  updateUser,
+} from "./controller/UserController";
+import { getAllVendas, realizarVenda } from "./controller/VendasController";
 import { authMiddleware } from "./middlewares/auth";
 
 router.post("/user", createUser);
 router.post("/login", login);
-router.post("/nivel", authMiddleware(["adm"]), createNivelAcesso);
+router.post("/nivel", createNivelAcesso);
 
 router.get("/users", authMiddleware(["adm"]), listUser);
 
+router.post(
+  "/update/user",
+  authMiddleware(["adm", "Vendedor", "Comprador"]),
+  updateUser
+);
+
+router.get(
+  "/get/user",
+  authMiddleware(["adm", "Vendedor", "Comprador"]),
+  getUniqueUser
+);
 router.post("/create/loja", authMiddleware(["Vendedor", "adm"]), createLoja);
 
 router.post(
@@ -52,3 +70,6 @@ router.get(
 );
 
 router.post("/venda", authMiddleware(["Comprador", "adm"]), realizarVenda);
+router.get("/vendas", authMiddleware(["Comprador", "adm"]), getAllVendas);
+router.post("/deletarTodosProdutos", deleteManyProdutos);
+router.get("/produto/:produtoId", getUniqueProdutos);

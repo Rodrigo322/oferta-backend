@@ -29,7 +29,7 @@ export const createLoja = async (req: Request, res: Response) => {
 };
 
 export const getAllLoja = async (req: Request, res: Response) => {
-  const loja = await prisma.loja.findMany();
+  const loja = await prisma.loja.findMany({});
 
   return res.json(loja);
 };
